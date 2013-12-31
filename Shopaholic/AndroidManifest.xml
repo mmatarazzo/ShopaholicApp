@@ -6,7 +6,13 @@
 
     <uses-sdk
         android:minSdkVersion="11"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
+    
+    <permission
+        android:name="com.example.shopaholic.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature"></permission>
+    
+    <uses-permission android:name="com.example.shopaholic.permission.MAPS_RECEIVE"></uses-permission>
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -48,7 +54,19 @@
         </activity>
         <activity
             android:name="com.example.shopaholic.ResultsActivity"
-            android:label="@string/title_activity_results" >
+            android:label="@string/title_activity_results"
+            android:parentActivityName="com.example.shopaholic.MainActivity" >
+            
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.shopaholic.MainActivity" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
         <activity
             android:name="com.example.shopaholic.VisualizationActivity"

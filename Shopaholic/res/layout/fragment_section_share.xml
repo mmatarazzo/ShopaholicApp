@@ -23,11 +23,12 @@
     	
 	</LinearLayout>
 	
+	<!--
 	<Button
         android:id="@+id/test_query_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/button_test_query" />
+        android:text="@string/button_test_query" /> -->
         <!-- android:onClick="displayResultsTest" -->
         
 </LinearLayout>

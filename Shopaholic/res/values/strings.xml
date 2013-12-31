@@ -10,10 +10,15 @@
     <string name="title_section3">Share</string>
     <string name="edit_share">Share a deal!</string>
     <string name="button_share">Share</string>
-    <string name="title_activity_results">Check out these deals!</string>
+    <string name="title_activity_results">Results</string>
+    <string name="menu_time_series">Time Series</string>
+    <string name="menu_centroid_plot">Centroid Plot</string>
+    <string name="action_visual">Show visual</string>
     <string name="button_ts_visual">Time-Series</string>
     <string name="button_test_query">Test Query!</string>
     <string name="title_activity_visualization">Visualization</string>
     <string name="hello_world">Hello world!</string>
+    <string name="connection_error">Connection Error</string>
+    <string name="xml_error">XML Error</string>
 
 </resources>

@@ -2,18 +2,20 @@ package com.example.shopaholic;
 
 import java.util.Locale;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -25,14 +27,20 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 	
 	public final static String TEST_QUERY = "com.example.shopaholic.TEST_QUERY";
+	public final static String CATEGORY_QUERY = "com.example.shopaholic.CATEGORY_QUERY";
+	public final static String SEARCH_BAR_QUERY = "com.example.shopaholic.SEARCH_BAR_QUERY";
+	public final static String SHARE_TEXT = "com.example.shopaholic.SHARE_TEXT";
 	
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -82,14 +90,35 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             // the adapter. Also specify this Activity object, which implements
             // the TabListener interface, as the callback (listener) for when
             // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
+            actionBar.addTab(actionBar.newTab()
+            		.setText(mSectionsPagerAdapter.getPageTitle(i))
+            		.setTabListener(this));
         }
+        
+        handleIntent(getIntent());
+    }
+    
+    public void onNewIntent(Intent intent) {
+    	setIntent(intent);
+    	handleIntent(intent);
     }
 
-    @Override
+    private void handleIntent(Intent intent) {
+		// TODO Auto-generated method stub
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			// handles a search query
+			String query = intent.getStringExtra(SearchManager.QUERY);
+			showResults(query);
+		}
+	}
+    
+    private void showResults(String query) {
+    	Intent queryIntent = new Intent(getApplicationContext(), ResultsActivity.class);
+		queryIntent.putExtra(SEARCH_BAR_QUERY, query);
+		startActivity(queryIntent);
+    }
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -180,23 +209,33 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     			Bundle savedInstanceState) {
     		View rootView = inflater.inflate(R.layout.fragment_section_shop, container, false);
     		
-    		//ArrayList<String> listViewList = new ArrayList<String>();
-    		//listViewList.add("RETAIL");
-    		
-    		String[] listViewList = new String[] {"All Deals", "Retail", "Entertainment", "Dining", "Services"};
-    		
+    		String[] listViewList = new String[] {"All Deals", "Deals Near Me", "Retail", 
+    				"Entertainment", "Dining", "Services"};		
     		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(), 
     				android.R.layout.simple_list_item_1, listViewList);
     		
     		ListView listView = (ListView) rootView.findViewById(R.id.list);
     		listView.setAdapter(adapter);
     		
+    		// Define the on-click listener for the list items
+            listView.setOnItemClickListener(new OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // Build the Intent used to open WordActivity with a specific word Uri
+                    Intent textResultsIntent = new Intent(getApplicationContext(), ResultsActivity.class);
+                    
+                    textResultsIntent.putExtra(CATEGORY_QUERY, position);
+		    		startActivity(textResultsIntent);
+                }
+            });
+    		
     		return rootView;
     	}
     }
     
     @SuppressLint("ValidFragment")
-    public class MapsSectionFragment extends Fragment {
+    public class MapsSectionFragment extends Fragment implements LocationListener {
     	
     	public MapsSectionFragment() {
     	}
@@ -212,23 +251,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		
     		return rootView;
     	}
-    	
-    	/**
-    	private GoogleMap mMap;
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.fragment_section_maps);
-            setUpMapIfNeeded();
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            setUpMapIfNeeded();
-        }
-        **/
 
         /**
          * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
@@ -265,9 +287,60 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
          */
         private void setUpMap() {
         	mMap.setMyLocationEnabled(true);
-            mMap.addMarker(new MarkerOptions().position(new LatLng(38.897279, -77.189691)).title("Deal at Falls Church!"));
-            mMap.addMarker(new MarkerOptions().position(new LatLng(38.918618, -77.22302)).title("Deal at Tysons Center!"));
-        } 	
+        	
+        	/**
+        	 * LocationManager locManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        	 * LocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+        	 */
+
+        	Location location = this.getMyLocation();               
+        	LatLng locationGPS = new LatLng(location.getLatitude(), location.getLongitude());
+        	mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationGPS, 16));
+        	
+        }
+        
+        // from http://stackoverflow.com/questions/18132294/cant-find-user-location-google-maps-api-v2
+        private Location getMyLocation() {
+    	    // Get location from GPS if it's available
+    	    LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+    	    Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+    	    // Location wasn't found, check the next most accurate place for the current location
+    	    if (myLocation == null) {
+    	        Criteria criteria = new Criteria();
+    	        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+    	        // Finds a provider that matches the criteria
+    	        String provider = lm.getBestProvider(criteria, true);
+    	        // Use the provider to get the last known location
+    	        myLocation = lm.getLastKnownLocation(provider);
+    	    }
+    	    return myLocation;
+    	}
+
+		@Override
+		public void onLocationChanged(Location arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+			// TODO Auto-generated method stub
+			
+		} 	
     }
     
     @SuppressLint("ValidFragment")
@@ -281,13 +354,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     			Bundle savedInstanceState) {
     		View rootView = inflater.inflate(R.layout.fragment_section_share, container, false);
     		
-    		final Intent intent = new Intent(this.getActivity(), ResultsActivity.class);	
-    		View testButton = rootView.findViewById(R.id.test_query_button);
-    		testButton.setOnClickListener(
+    		final Intent intent = new Intent(this.getActivity(), ResultsActivity.class);
+    		
+    		View shareButton = rootView.findViewById(R.id.share_button);
+    		shareButton.setOnClickListener(
     				new OnClickListener() {
     					@Override
     					public void onClick(View view) {
-    			    		intent.putExtra(TEST_QUERY, "test query");
+    						//final Intent intent = new Intent(this.getActivity(), ResultsActivity.class);
+    			    		EditText editText = (EditText) findViewById(R.id.edit_share);
+    			    		String message = editText.getText().toString();
+    			    		intent.putExtra(SHARE_TEXT, message);
     			    		startActivity(intent);
     					}
     				}
@@ -296,16 +373,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     		return rootView;
     	}
     }
-    
-    /**
-     * For non-fragment usage
-     * 
-	public void displayResultsTest(View view) {
-		Intent intent = new Intent(this.getActivity(), ResultsActivity.class);
-		intent.putExtra(QUERY, "dummy query");
-		startActivity(intent);
-	}
-	**/
 
     /**
      * A dummy fragment representing a section of the app, but that simply

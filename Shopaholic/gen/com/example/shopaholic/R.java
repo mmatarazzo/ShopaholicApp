@@ -188,31 +188,34 @@ containing a value of this type.
         public static final int common_signin_btn_text_normal_light=0x7f020015;
         public static final int common_signin_btn_text_pressed_dark=0x7f020016;
         public static final int common_signin_btn_text_pressed_light=0x7f020017;
-        public static final int ic_action_search=0x7f020018;
-        public static final int ic_launcher=0x7f020019;
-        public static final int ic_plusone_medium_off_client=0x7f02001a;
-        public static final int ic_plusone_small_off_client=0x7f02001b;
-        public static final int ic_plusone_standard_off_client=0x7f02001c;
-        public static final int ic_plusone_tall_off_client=0x7f02001d;
+        public static final int ic_action_picture=0x7f020018;
+        public static final int ic_action_search=0x7f020019;
+        public static final int ic_launcher=0x7f02001a;
+        public static final int ic_plusone_medium_off_client=0x7f02001b;
+        public static final int ic_plusone_small_off_client=0x7f02001c;
+        public static final int ic_plusone_standard_off_client=0x7f02001d;
+        public static final int ic_plusone_tall_off_client=0x7f02001e;
     }
     public static final class id {
-        public static final int action_search=0x7f06000f;
-        public static final int action_settings=0x7f060010;
-        public static final int edit_share=0x7f06000b;
+        public static final int action_search=0x7f06000e;
+        public static final int action_settings=0x7f06000f;
+        public static final int action_visual=0x7f060010;
+        public static final int edit_share=0x7f06000c;
         public static final int hybrid=0x7f060004;
-        public static final int list=0x7f06000e;
-        public static final int map=0x7f06000a;
-        public static final int mySimpleXYPlot=0x7f060006;
+        public static final int list=0x7f06000a;
+        public static final int list_share=0x7f060009;
+        public static final int map=0x7f06000b;
+        public static final int menu_centroid_plot=0x7f060012;
+        public static final int menu_time_series=0x7f060011;
         public static final int none=0x7f060000;
         public static final int normal=0x7f060001;
         public static final int pager=0x7f060005;
+        public static final int results_share=0x7f060008;
         public static final int satellite=0x7f060002;
         public static final int section_label=0x7f060007;
-        public static final int share_button=0x7f06000c;
+        public static final int share_button=0x7f06000d;
         public static final int terrain=0x7f060003;
-        public static final int test_query_button=0x7f06000d;
-        public static final int ts_visual_button=0x7f060009;
-        public static final int visualization=0x7f060008;
+        public static final int time_series=0x7f060006;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -220,19 +223,23 @@ containing a value of this type.
         public static final int activity_visualization=0x7f030002;
         public static final int fragment_main_dummy=0x7f030003;
         public static final int fragment_results_dummy=0x7f030004;
-        public static final int fragment_results_visual=0x7f030005;
-        public static final int fragment_section_maps=0x7f030006;
-        public static final int fragment_section_share=0x7f030007;
-        public static final int fragment_section_shop=0x7f030008;
+        public static final int fragment_results_share=0x7f030005;
+        public static final int fragment_results_shop=0x7f030006;
+        public static final int fragment_results_visual=0x7f030007;
+        public static final int fragment_section_maps=0x7f030008;
+        public static final int fragment_section_share=0x7f030009;
+        public static final int fragment_section_shop=0x7f03000a;
     }
     public static final class menu {
         public static final int main=0x7f0a0000;
         public static final int results=0x7f0a0001;
-        public static final int visualization=0x7f0a0002;
+        public static final int results_action_visualization=0x7f0a0002;
+        public static final int visualization=0x7f0a0003;
     }
     public static final class string {
         public static final int action_search=0x7f07001c;
         public static final int action_settings=0x7f07001a;
+        public static final int action_visual=0x7f070025;
         public static final int app_name=0x7f070019;
         /**   Title for notification shown when GooglePlayServices needs to be
         enabled for a application to work. [CHAR LIMIT=70] 
@@ -258,8 +265,8 @@ containing a value of this type.
          */
         public static final int auth_client_using_bad_version_title=0x7f070013;
         public static final int button_share=0x7f070021;
-        public static final int button_test_query=0x7f070024;
-        public static final int button_ts_visual=0x7f070023;
+        public static final int button_test_query=0x7f070027;
+        public static final int button_ts_visual=0x7f070026;
         /**  Button in confirmation dialog to enable Google Play services.  Clicking it
         will direct user to application settings of Google Play services where they
         can enable it [CHAR LIMIT=40] 
@@ -327,14 +334,18 @@ containing a value of this type.
         /**  Long form sign-in button text [CHAR LIMIT=30] 
          */
         public static final int common_signin_button_text_long=0x7f070012;
+        public static final int connection_error=0x7f07002a;
         public static final int edit_share=0x7f070020;
-        public static final int hello_world=0x7f070026;
+        public static final int hello_world=0x7f070029;
+        public static final int menu_centroid_plot=0x7f070024;
+        public static final int menu_time_series=0x7f070023;
         public static final int search_hint=0x7f07001b;
         public static final int title_activity_results=0x7f070022;
-        public static final int title_activity_visualization=0x7f070025;
+        public static final int title_activity_visualization=0x7f070028;
         public static final int title_section1=0x7f07001d;
         public static final int title_section2=0x7f07001e;
         public static final int title_section3=0x7f07001f;
+        public static final int xml_error=0x7f07002b;
     }
     public static final class style {
         /** 
@@ -371,7 +382,15 @@ containing a value of this type.
         public static final int MyActionBarTitleText=0x7f090003;
     }
     public static final class xml {
-        public static final int searchable=0x7f040000;
+        public static final int dealsplus_374634322453479424=0x7f040000;
+        public static final int dealsplus_374641252672614400=0x7f040001;
+        public static final int officemaxdeal_403977248749154305=0x7f040002;
+        public static final int officemaxdeal_403992314923991040=0x7f040003;
+        public static final int oldnavy_403659964079951872=0x7f040004;
+        public static final int oldnavy_403936214748651520=0x7f040005;
+        public static final int searchable=0x7f040006;
+        public static final int tgifridays_403200516085129216=0x7f040007;
+        public static final int tgifridays_403669678876147713=0x7f040008;
     }
     public static final class styleable {
         /** Attributes that can be used with a MapAttrs.

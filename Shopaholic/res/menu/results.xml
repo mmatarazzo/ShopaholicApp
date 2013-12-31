@@ -1,6 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/action_search"
+        android:title="@string/action_search"
+        android:icon="@drawable/ic_action_search"
+        android:showAsAction="ifRoom|collapseActionView"
+        android:actionViewClass="android.widget.SearchView"/>
+    
+    <item
+        android:id="@+id/action_visual"
+        android:title="@string/action_visual"
+        android:icon="@drawable/ic_action_picture"
+        android:showAsAction="ifRoom|collapseActionView"
+        android:onClick="showVisualization" />
+    
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never"

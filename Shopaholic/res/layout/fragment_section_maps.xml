@@ -5,10 +5,11 @@
     android:id="@+id/map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    class="com.google.android.gms.maps.SupportMapFragment"
-    map:cameraTargetLat="38.897279"
-  	map:cameraTargetLng="-77.189691"
-  	map:cameraZoom="12"
+    class="com.google.android.gms.maps.SupportMapFragment"    
   	tools:context=".MainActivity$MapsSectionFragment" >
-    
+  	  
 </fragment>
+
+<!-- map:cameraTargetLat="38.897279"
+  	map:cameraTargetLng="-77.189691"
+  	map:cameraZoom="12" -->

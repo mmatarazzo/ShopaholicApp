@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><add>
+<doc>
+<field name="full_tweet">RT @shanwillardson: This adorable #houndstooth cardigan from @OldNavy is ON SALE right now and up on the blog! #GBO? http://t.co/G9FcwKqmCq</field>
+<field name="tweet_id">403936214748651520</field>
+<field name="tweeted_by">OldNavy</field>
+<field name="time">Fri Nov 22 12:21:13 EST 2013</field>
+<field name="user_followers_count">182494</field>
+<field name="user_location"></field>
+<field name="retweetcount">1</field>
+<field name="is_favorite">false</field>
+<field name="mentionedentities">Shannon Willardson,Old Navy Official</field>
+<field name="url">http://gbofashion.com/old-navy-cardigans/</field>
+<field name="hashtags">houndstooth,GBO</field>
+<field name="place">null</field>
+</doc>
+</add>
