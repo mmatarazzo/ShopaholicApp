@@ -1,3 +1,17 @@
-Android UI for Shopping application. Done for VT Information Retrieval course project.
+Android source for Shopping Application. Done for VT Information Retrieval course project.
+
+This application uses crowd-sourcing to provide the user with tweets related to current shopping deals in the 
+local area. The application sends HTTP requests (using AsyncTask) to a Hadoop server that stores a corpus of 
+crawled twitter data indexed for shopping relevancy (e.g. store or product names). The server returns a ranked 
+set based on the search query from the application or category of deal selected. The data is returned in XML 
+format and parsed within the app, using XMLPullParser class. The results can be displayed in a textual format, 
+geographical format (using Google Maps API v2), or as a time-series plot of deal trends over a period of time 
+(using AndroidPlot API). The application is composed of two major activities, one for searching, and one for 
+viewing results.  Each activity is further broken down into three fragments (representing standard Android 
+three-tabbed UI) for textual search/results, geographical search/results, and user experience sharing.
+
+Future improvements to this project include integrating it with Twitter so that the user can directly tweet 
+about a shopping experience, providing additional UI components for more complex search queries, crawling and 
+indexing new tweets in real time, and generating dynamic time-series plots.
 
 Please contact before using code. All rights reserved.
