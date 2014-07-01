@@ -127,7 +127,7 @@ public class VisualizationActivity extends Activity {
         }
         **/
         
-        XYSeries series2 = new SimpleXYSeries(datesu, counts, "Deals/Date 2013");
+        XYSeries series2 = new SimpleXYSeries(datesu, counts, "Deals/Time");
         
         plot.getGraphWidget().getGridBackgroundPaint().setColor(Color.WHITE);
         plot.getGraphWidget().getDomainGridLinePaint().setColor(Color.BLACK);
@@ -164,12 +164,13 @@ public class VisualizationActivity extends Activity {
         plot.setDomainStep(XYStepMode.SUBDIVIDE, 13);
         plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 1);
         //plot.setTicksPerRangeLabel(11);
-        plot.setDomainBoundaries(1357016400, 1388552400, BoundaryMode.FIXED);
+        //plot.setDomainBoundaries(1357016400, 1388552400, BoundaryMode.FIXED);
+        plot.setDomainBoundaries(1394841600, 1401580800, BoundaryMode.FIXED);
         plot.setRangeBoundaries(0, 10, BoundaryMode.FIXED);
 
         // customize our domain/range labels
-        plot.setDomainLabel("Date");
-        plot.setRangeLabel("# of Deals");
+        plot.setDomainLabel("Time");
+        plot.setRangeLabel("# of Tweets");
 
         // get rid of decimal points in our range labels:
         plot.setRangeValueFormat(new DecimalFormat("0"));

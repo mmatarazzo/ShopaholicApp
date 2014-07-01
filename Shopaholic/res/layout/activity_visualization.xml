@@ -12,7 +12,8 @@
             android:id="@+id/time_series"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            androidPlot.title="Time Series"
+            
+            androidPlot.title="Trending deals / user sentiments"
             androidPlot.domainLabel="Domain"
             androidPlot.rangeLabel="Range"
             androidPlot.titleWidget.labelPaint.textSize="@dimen/title_font_size"

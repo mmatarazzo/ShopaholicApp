@@ -4,23 +4,24 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
+    <uses-permission android:name="com.example.shopaholic.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- User location -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    
+    <permission
+        android:name="com.example.shopaholic.permission.MAPS_RECEIVE"
+        android:protectionLevel="signature" />
+    
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="19" />
     
-    <permission
-        android:name="com.example.shopaholic.permission.MAPS_RECEIVE"
-        android:protectionLevel="signature"></permission>
-    
-    <uses-permission android:name="com.example.shopaholic.permission.MAPS_RECEIVE"></uses-permission>
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-    <!-- User location -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- Maps API needs OpenGL ES 2.0. -->
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -41,33 +42,30 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="oauth" android:host="t4jsample"/>
             </intent-filter>
-
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        
         <activity
             android:name="com.example.shopaholic.ResultsActivity"
             android:label="@string/title_activity_results"
             android:parentActivityName="com.example.shopaholic.MainActivity" >
-            
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.shopaholic.MainActivity" />
@@ -75,6 +73,7 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        
         <activity
             android:name="com.example.shopaholic.VisualizationActivity"
             android:label="@string/title_activity_visualization"

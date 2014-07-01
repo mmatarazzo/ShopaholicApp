@@ -1,11 +1,14 @@
 package com.example.shopaholic;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +44,7 @@ import android.content.res.XmlResourceParser;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -50,6 +54,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
@@ -84,7 +89,7 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
     
     public static final String WIFI = "Wi-Fi";
     public static final String ANY = "Any";
-    private static final String URL = "http://72.196.218.64:8983/solr/select?q=";
+    private static final String URL = "http://shopaholic.cs.vt.edu:8983/solr/select?q=";
     
     // Whether there is a Wi-Fi connection.
     private static boolean wifiConnected = true; 
@@ -183,9 +188,9 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 		Bundle extras = getIntent().getExtras();
 		
 		// Get the user's location
-		Location location = this.getMyLocation();               
-		userLat = String.valueOf(location.getLatitude());
-		userLng = String.valueOf(location.getLongitude());
+		//Location location = this.getMyLocation();               
+		//userLat = String.valueOf(location.getLatitude());
+		//userLng = String.valueOf(location.getLongitude());
 				
 		String placesUrl = "";
 		
@@ -200,6 +205,7 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 		}
         
         // for local tweet processing---------------------------------------------
+		/**
 		if (searchBarQuery && local) {
         	try {
         		GetAttributesLocal(searchText);
@@ -244,39 +250,52 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
         		Toast.makeText(this, "Could not read XML file", Toast.LENGTH_SHORT).show();
         	}
         }
+        **/
 		
-		// for server tweet processing-------------------------
+		// for server tweet processing---------------------------------------------
 		if (!local) {
 			if (categoryQuery) {
 				switch (category) {
 				case 0:
-					searchText = "deals";
+					searchText = "deal";
 					break;
 				case 1:
-					searchText = "local";
+					searchText = "(local AND deal)^20 OR local^15";
 					break;
 				case 2:
-					searchText = "retail";
+					searchText = "(retail AND deal)^20 OR retail^15";
 					break;
 				case 3:
-					searchText = "entertainment";
+					searchText = "(entertainment AND deal)^20 OR entertainment^15";
 					break;
 				case 4:
-					searchText = "dining";
+					searchText = "(dining AND deal)^20 OR dining^15";
 					break;
 				case 5:
-					searchText = "services";
+					searchText = "(service AND deal)^20 OR service^15";
 					break;				
 				}
 			}
 			try {
-				//System.out.println("Check this first");
-				String fullURL = URL + searchText + "&rows=30";
+				//System.out.println(searchText);
+				String fullURL = "";
+				
+				if (MainActivity.isLoggedIn) {
+					searchText += "+nationals";
+				}
+				
+				fullURL = URL + URLEncoder.encode(searchText, "UTF-8") + "&rows=30";
+				
+				//String fullURL = URL + URLEncoder.encode(searchText, "UTF-8") + "&rows=30";
+				//System.out.println(fullURL);
 				loadDeals(fullURL);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -287,7 +306,9 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 		for (String v : venues) {
 			System.out.println(v);
 			//System.out.println(venues.size());
-			placesUrl = "https://maps.googleapis.com/maps/api/place/search/xml?keyword="+v+"&location="+userLat+","+userLng+"&radius=20000&sensor=false&key=AIzaSyDfioEwVJNylmvY06WQcD5ywSpu29phnTg";
+			//placesUrl = "https://maps.googleapis.com/maps/api/place/search/xml?keyword="+v+"&location="+userLat+","+userLng+"&radius=20000&sensor=false&key=AIzaSyDfioEwVJNylmvY06WQcD5ywSpu29phnTg";
+			placesUrl = "https://maps.googleapis.com/maps/api/place/search/xml?keyword="+v+"&location=38.867526,-77.087223&radius=20000&sensor=false&key=AIzaSyDfioEwVJNylmvY06WQcD5ywSpu29phnTg";
+			System.out.println(placesUrl);
 			try {
 				loadDeals(placesUrl);
 			} catch (InterruptedException e) {
@@ -325,7 +346,7 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 
 	public void loadDeals(String url) throws InterruptedException, ExecutionException {
 		// TODO Auto-generated method stub
-		//System.out.println("check that we loaded");
+		//System.out.println("check that we loaded: " + url);
 		if ((sPref.equals(ANY)) && (wifiConnected || mobileConnected)) {
             //System.out.println("check 2");
 			new DownloadXmlTask().execute(url).get();
@@ -363,7 +384,15 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 		    SolrXmlParser solrXmlParser = new SolrXmlParser();
 		    String deal = null;
 		    try {
-		        stream = downloadUrl(urlString);        
+		    	//System.out.println("386 : " + urlString);
+		        stream = downloadUrl(urlString);
+		        /**
+		        BufferedReader test = new BufferedReader(new InputStreamReader(stream));
+		        String line;
+		        while ((line = test.readLine()) != null) {
+		        	System.out.println(line);
+		        }
+		        **/
 		        deal = solrXmlParser.parse(stream);
 		    // Makes sure that the InputStream is closed after the app is
 		    // finished using it.
@@ -378,12 +407,13 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 		// Given a string representation of a URL, sets up a connection and gets
 		// an input stream.
 		private InputStream downloadUrl(String urlString) throws IOException {
-		    java.net.URL url = new java.net.URL(urlString);
-		    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		    conn.setReadTimeout(10000 /* milliseconds */);
-		    conn.setConnectTimeout(15000 /* milliseconds */);
+		    java.net.URL url = new java.net.URL (urlString);
+		    System.out.println("394 : " + url);
+		    HttpURLConnection conn = (HttpURLConnection) url.openConnection();	    
 		    conn.setRequestMethod("GET");
-		    conn.setDoInput(true);
+		    //conn.setConnectTimeout(15000 /* milliseconds */);
+		    conn.setReadTimeout(15000 /* milliseconds */);
+		    //conn.setDoInput(true);
 		    // Starts the query
 		    conn.connect();
 		    return conn.getInputStream();
@@ -394,6 +424,7 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 		
 		public String parse(InputStream in) throws XmlPullParserException, IOException {
 	        try {
+	        	//System.out.println(in.toString());
 	            XmlPullParser parser = Xml.newPullParser();
 	            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
 	            parser.setInput(in, null);
@@ -407,8 +438,31 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 
 		private String GetAttributesServer(XmlPullParser xpp) throws XmlPullParserException, IOException {
 			// TODO Auto-generated method stub
-			ArrayList<String> initVenues = new ArrayList<String>();
+			ArrayList<String> stores = new ArrayList<String>();
+			stores.add("Wal-Mart");
+			stores.add("Kroger");
+			stores.add("Target");
+			stores.add("Costco");
+			stores.add("The Home Depot");
+			stores.add("Walgreen");
+			stores.add("CVS");
+			stores.add("Lowe's");
+			stores.add("Safeway");
+			stores.add("McDonald's");
+			stores.add("local");
+			stores.add("retail");
+			stores.add("entertainment");
+			stores.add("dining");
+			stores.add("services");
+			stores.add("Nationals");
+			stores.add("Wizards");
+			stores.add("Hollister");
+			stores.add("Abercrombie");
+			stores.add("CarMax");
+			//stores.add("Maternity");
+			//stores.add("Nikko");
 			
+			ArrayList<String> initVenues = new ArrayList<String>();	
 			//System.out.println("here?");
 			
 			int eventType = xpp.getEventType();
@@ -417,6 +471,13 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 			String attr = "";
 			//int dealCountVenue = 0;	
 			int latlngcount = 0;
+			
+			results.add("Overall Sentiment: Neutral");
+			
+			if (MainActivity.tweeted) {
+				//DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+				results.add("Deal: #shopaholicVT " + MainActivity.tweet + "\n\nSentiment: Negative\n\nTime: 2014-06-30T22:04:22Z\n\nTweeted by: Mike Matarazzo");
+			}
 			
 			while (eventType != XmlPullParser.END_DOCUMENT) {
 				if (eventType == XmlPullParser.START_DOCUMENT) {
@@ -427,7 +488,8 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 			    			xpp.getName().equals("date")) {
 			    		attr = xpp.getAttributeValue(ns, "name");
 			    		//System.out.println(attr);
-				    	if (attr.equals("full_tweet") || attr.equals("tweeted_by") || attr.equals("time")) {
+				    	if (attr.equals("full_tweet") || attr.equals("tweeted_by") || attr.equals("time") || 
+				    			attr.equals("sentiment")) {
 				    		isCorrectTag = true;
 				    	}
 			    	} else if ((xpp.getName().equals("lat") || xpp.getName().equals("lng"))) {
@@ -440,13 +502,13 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 							//System.out.println("check this here");
 							//System.out.println(result);
 							//System.out.println(searchText);
-							if (result.toLowerCase().contains(searchText.toLowerCase())) {
+							//if (result.toLowerCase().contains(searchText.toLowerCase())) {
 								results.add(result);
 								//System.out.println("The result is " + result);
 								for (String iv : initVenues) {
 									if (result.contains(iv) && !venues.contains(iv)) venues.add(iv);
 								}
-							}
+							//}
 						} else if (categoryQuery && !isPlaces) {
 							//System.out.println("HERE?");
 							results.add(result);
@@ -479,21 +541,37 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 							//encompasses.add(encompass.toString());
 							//encompass.setLength(0);
 							//encompass.append(xpp.getText());
-							initVenues.add(xpp.getText());
-							stringBuffer.append("\nTweeted by: " + xpp.getText());
+								
+							//initVenues.add(xpp.getText());
+							stringBuffer.append("\n\nTweeted by: " + xpp.getText());
 						} else {
 							//dealCountVenue++;
 							//counts.put(xpp.getText(), dealCount);
 							//encompass.append(xpp.getText());
-							stringBuffer.append("\nTweeted by: " + xpp.getText());
+							stringBuffer.append("\n\nTweeted by: " + xpp.getText());
 						}
 					} else if (attr.equals("full_tweet")) {
 						//encompass.append(xpp.getText());
 						stringBuffer.append("Deal: " + xpp.getText());
+						
+						// needs to go down to full tweet!
+						for (String store : stores) {
+							if (xpp.getText().toLowerCase().contains(store.toLowerCase())) initVenues.add(store);
+						}
 					} else if (attr.equals("time")) {
 						//encompass.append("\n"+xpp.getText());
-						stringBuffer.append("\nTime: " + xpp.getText());
+						stringBuffer.append("\n\nTime: " + xpp.getText());
 						dates.add(xpp.getText());
+					} else if (attr.equals("sentiment")) {
+						if (xpp.getText().contains("Positive") || xpp.getText().contains("Positive Negative") ||
+								xpp.getText().contains("Negative Positive") || xpp.getText().contains("Positive Neutral") ||
+								xpp.getText().contains("Neutral Positive")) 
+							stringBuffer.append("\n\nSentiment: Positive");
+						else if (xpp.getText().contains("Neutral Negative") || xpp.getText().contains("Negative Neutral") ||
+								xpp.getText().contains("Neutral"))
+							stringBuffer.append("\n\nSentiment: Neutral");
+						else if (xpp.getText().contains("Negative"))
+							stringBuffer.append("\n\nSentiment: Negative");
 					}
 				} else if (eventType == XmlPullParser.TEXT && isLocTag) {
 					latlng.add(xpp.getText());
@@ -503,7 +581,7 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 			}
 			//stringBuffer.append("\n--- End XML ---");
 			
-			System.out.println(latlngcount);
+			System.out.println("LatLng count: " + latlngcount);
 			
 			if (isPlaces) {
 				if (latlngcount == 0) hasResults.add(false);
@@ -544,6 +622,7 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 		
 	}
 
+	/**
 	private void GetAttributesLocal(String string) throws XmlPullParserException, IOException {
 		// TODO Auto-generated method stub
 		
@@ -646,7 +725,8 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
         
 	    } while (count > 0);
 	}
-
+	**/
+	
 	public void onBackgroundTaskDataObtained(String result) {
 		// TODO Auto-generated method stub
 		results.add(result);
@@ -703,7 +783,7 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 	}
 	
 	public void showVisualization(MenuItem mi) {
-		final Intent intentVisual = new Intent(this, VisualizationActivity.class);
+		Intent intentVisual = new Intent(this, VisualizationActivity.class);
 		intentVisual.putExtra(TIME_SERIES_VISUAL, dates);
 		startActivity(intentVisual);
 	}
@@ -727,6 +807,7 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
 	 * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
 	 * one of the sections/tabs/pages.
 	 */
+	
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
 		public SectionsPagerAdapter(FragmentManager fm) {
@@ -791,6 +872,11 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
     		ArrayAdapter<String> adapterResults = new ArrayAdapter<String>(this.getActivity(),
 					android.R.layout.simple_list_item_1, results);
 			listView.setAdapter(adapterResults);
+			
+			if (MainActivity.immediatelyAfterLogin) {
+				Toast.makeText(getApplicationContext(), "Welcome Mike! Some recommendations for you!", Toast.LENGTH_LONG).show();
+				MainActivity.immediatelyAfterLogin = false;
+			}
     		
     		return rootView;
     	}
@@ -875,7 +961,8 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
                 				Double.parseDouble(latlng.get(i+1))
                 				)).title(
                 						//String.valueOf(dealCounts.get(d)) + 
-                						"Deals at " + mapVenues.get(v)));
+                						"User tweet about " + mapVenues.get(v) ));
+                						//"Negative sentiment for: Nationals shirts"));
         		
         		p+=2;
         		if (p >= placeCounts.get(v)) {
@@ -885,14 +972,17 @@ public class ResultsActivity extends FragmentActivity implements ActionBar.TabLi
         			d++;
         		}
         		
+        		//mMap.addMarker(null).
+        		
         		//latSum += Double.parseDouble(latlng.get(i));
         		//lngSum += Double.parseDouble(latlng.get(i+1));
         	}
         	             
-        	LatLng locationGPS = new LatLng(Double.parseDouble(userLat), Double.parseDouble(userLng));
+        	//LatLng locationGPS = new LatLng(Double.parseDouble(userLat), Double.parseDouble(userLng));
         	//LatLng locationGPS = new LatLng(latSum/(latlng.size()/2), lngSum/(latlng.size()/2));
         	
-        	mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationGPS, 10));
+        	//mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationGPS, 10));
+        	mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(38.867526,-77.087223), 12));
         	
             /**
         	mMap.addMarker(new MarkerOptions().position(
